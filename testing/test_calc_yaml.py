@@ -1,32 +1,38 @@
 """
 __author__ = 'hogwarts_xixi'
 """
+import yaml
 
+"""
+__author__ = 'hogwarts_xixi'
+"""
 # 测试类
 # 命名规则：文件以test_开头，类以Test开头，方法以test_开头
 import pytest
 from pythonsource.calculator import Calculator
 
 
+# get_data()提供测试数据
+def get_data():
+    # return [[1,1,2],[-0.01, 0.02,0.01],[10, 0.02,10.02]]
+    # 数据文件 里的测试数据读取出来，
+    with open("./datas/data.yml", encoding="utf-8") as f:
+        result = yaml.safe_load(f)
+    return result
+
+
 class TestCalc:
     def setup(self):
-        # 每条用例执行之前需要执行setup
         print("开始计算")
 
     def teardown(self):
-        # 每条用例执行之后需要执行teardown -- 方法级别
         print("结束计算")
 
     def teardown_class(self):
-        # 这个类的所有用例执行之后执行teardown_class --- 类级别
-        # 类级别：整个类只执行一次
         print("结束测试")
 
     @pytest.mark.add
-    # @pytest.mark.parametrize(参数名, 参数值的列表或者元组)
-    # 参数化的意思，将变化的测试数据，以参数的形式传递到测试用例当中，
-    # 每一条测试数据，就是一条测试用例，在执行这条测试数据之前/后，也会执行setup/teardown
-    @pytest.mark.parametrize("a,b,expect", [[1, 1, 2], [-0.01, 0.02, 0.01], [10, 0.02, 10.02]])
+    @pytest.mark.parametrize("a,b,expect", get_data().get("add_normal"), ids=["int_int", "float_float", "int_float"])
     def test_add(self, a, b, expect):
         """"
         1. 第一个数输入 a ：1
@@ -54,7 +60,3 @@ class TestCalc:
         with pytest.raises(eval(expect)) as e:
             result = calc.add(a, b)
         assert e.typename == expect
-
-    @pytest.mark.div
-    def test_div(self):
-        pass
